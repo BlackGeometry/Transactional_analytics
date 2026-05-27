@@ -147,3 +147,23 @@ WHERE
     AND dictHas('lab08.users_dict', assumeNotNull(t.user_id))
 GROUP BY date, is_test, t.transaction_type, t.status
 ORDER BY date, is_test;
+
+
+-- =============================================================
+-- Когортный анализ: новые vs возвращающиеся пользователи
+-- Новый = первая транзакция за всё время; возвращающийся = уже был раньше
+-- =============================================================
+CREATE VIEW IF NOT EXISTS lab08.mart_cohort_users AS
+SELECT
+    toDate(created_at)          AS date,
+    countIf(is_new = 1)         AS new_users,
+    countIf(is_new = 0)         AS returning_users
+FROM (
+    SELECT
+        user_id,
+        created_at,
+        if(toDate(created_at) = toDate(min(created_at) OVER (PARTITION BY user_id)), 1, 0) AS is_new
+    FROM lab08.transactions_clean FINAL
+)
+GROUP BY date
+ORDER BY date;
