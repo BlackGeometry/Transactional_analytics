@@ -1,0 +1,15 @@
+# Секреты
+.env
+init/KAFKA_DATA.sql
+
+# Данные Docker volumes
+pgdata/
+clickhouse_data/
+logs/
+superset_home/
+sample/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
